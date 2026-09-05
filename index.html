@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fetch POST Webクライアント</title>
+    <style>
+        /* 🖤 黒をメインとしたサイバー・洗練されたダークテーマ */
+        :root {
+            --bg-color: #0d1117;        /* GitHub風の深い黒 */
+            --card-bg: #161b22;         /* 少し明るい黒 */
+            --border-color: #30363d;    /* ライン用のグレー */
+            --text-main: #c9d1d9;       /* メインの文字色（少し薄い白） */
+            --text-sub: #8b949e;        /* サブの文字色 */
+            --accent-color: #58a6ff;    /* アクセント（青） */
+            --success-color: #3fb950;   /* 成功（緑） */
+            --error-color: #f85149;     /* エラー（赤） */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+            color: #ffffff;
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            color: #ffffff;
+            margin-top: 30px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .input-desc {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-bottom: 6px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+        }
+
+        button {
+            background-color: #21262d;
+            color: var(--accent-color);
+            border: 1px solid var(--border-color);
+            padding: 10px 20px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border-color: var(--accent-color);
+        }
+
+        .result-box {
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #040404;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
+            font-size: 0.85rem;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: var(--text-sub);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>⚡ Fetch POST Request Client</h2>
+    
+    <div class="card">
+        <form id="postForm">
+            <!-- 🔗 URLを自由に指定できる入力欄 -->
+            <div class="form-group">
+                <label for="endpointUrl">送信先エンドポイント URL:</label>
+                <input type="text" id="endpointUrl" required value="https://typicode.com">
+                <div class="input-desc">※初期値としてテスト用のダミーAPIが入っています。ご自身のURLに書き換えてください。</div>
+            </div>
+
+            <!-- 📝 送信するJSONデータ（自由に変更可能） -->
+            <div class="form-group">
+                <label for="jsonBody">送信データ (JSONフォーマット):</label>
+                <textarea id="jsonBody" rows="8" required>{\n  "title": "テストタイトル",\n  "body": "ここにメッセージを入力します",\n  "userId": 1\n}</textarea>
+                <div class="input-desc">※正しいJSON形式（キーと文字列をダブルクォーテーションで囲む）で入力してください。</div>
+            </div>
+
+            <button type="submit">Fetch POST 送信</button>
+        </form>
+    </div>
+
+    <h3>レスポンス結果:</h3>
+    <div class="card">
+        <div id="statusBadge"></div>
+        <div id="result" class="result-box">データを送信すると、ここに結果（JSON）が表示されます。</div>
+    </div>
+
+    <script>
+        document.getElementById('postForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const url = document.getElementById('endpointUrl').value.trim();
+            const jsonBodyText = document.getElementById('jsonBody').value.trim();
+            const resultDiv = document.getElementById('result');
+            const statusBadge = document.getElementById('statusBadge');
+
+            // 画面表示のリセット
+            statusBadge.innerHTML = '';
+            resultDiv.style.color = 'var(--text-sub)';
+            resultDiv.innerText = '通信中...';
+
+            // 1. JSONの構文チェック
+            let parsedData;
+            try {
+                parsedData = JSON.parse(jsonBodyText);
+            } catch (e) {
+                statusBadge.innerHTML = '<span class="status-badge" style="background: rgba(248,81,73,0.15); color: var(--error-color);">JSONエラー</span>';
+                resultDiv.style.color = 'var(--error-color)';
+                resultDiv.innerText = `入力されたデータが正しいJSON形式ではありません。\nエラー内容: ${e.message}`;
+                return;
+            }
+
+            // 2. Fetch POST 送信の実行
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(parsedData)
+                });
+
+                // 3. レスポンス結果の反映
+                if (response.ok) {
+                    const jsonResponse = await response.json();
+                    statusBadge.innerHTML = `<span class="status-badge" style="background: rgba(63,185,80,0.15); color: var(--success-color);">SUCCESS (HTTP ${response.status})</span>`;
+                    resultDiv.style.color = '#58a6ff'; // レスポンスJSONを見やすく青っぽく
+                    resultDiv.innerText = JSON.stringify(jsonResponse, null, 2);
+                } else {
+                    statusBadge.innerHTML = `<span class="status-badge" style="background: rgba(248,81,73,0.15); color: var(--error-color);">ERROR (HTTP ${response.status})</span>`;
+                    resultDiv.style.color = 'var(--error-color)';
+                    resultDiv.innerText = `サーバーがエラーを返しました。\nステータステキスト: ${response.statusText}`;
+                }
+
+            } catch (error) {
+                // CORSエラーやURL間違い、ネットワーク切断など
+                statusBadge.innerHTML = '<span class="status-badge" style="background: rgba(248,81,73,0.15); color: var(--error-color);">FAILED</span>';
+                resultDiv.style.color = 'var(--error-color)';
+                resultDiv.innerText = `【通信に失敗しました】\n理由として以下の可能性があります：\n1. URLが間違っている\n2. 接続先サーバーがCORS（クロスドメイン制限）を許可していない\n3. ネットワークがオフライン\n\nエラー詳細:\n${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>

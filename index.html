@@ -3,212 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fetch POST Webクライアント</title>
+    <title>Discord Webhook 送信ツール</title>
     <style>
-        /* 🖤 黒をメインとしたサイバー・洗練されたダークテーマ */
-        :root {
-            --bg-color: #0d1117;        /* GitHub風の深い黒 */
-            --card-bg: #161b22;         /* 少し明るい黒 */
-            --border-color: #30363d;    /* ライン用のグレー */
-            --text-main: #c9d1d9;       /* メインの文字色（少し薄い白） */
-            --text-sub: #8b949e;        /* サブの文字色 */
-            --accent-color: #58a6ff;    /* アクセント（青） */
-            --success-color: #3fb950;   /* 成功（緑） */
-            --error-color: #f85149;     /* エラー（赤） */
-        }
-
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            max-width: 700px;
-            margin: 40px auto;
-            padding: 0 20px;
-            line-height: 1.6;
+            font-family: sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f4f4f9;
         }
-
-        h2 {
-            font-size: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 25px;
-            color: #ffffff;
-        }
-
-        h3 {
-            font-size: 1.1rem;
-            color: #ffffff;
-            margin-top: 30px;
-        }
-
         .card {
-            background-color: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 24px;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
-
         label {
             display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            font-size: 0.9rem;
+            margin-bottom: 5px;
+            font-weight: bold;
         }
-
-        .input-desc {
-            font-size: 0.8rem;
-            color: var(--text-sub);
-            margin-bottom: 6px;
-        }
-
-        input[type="text"], textarea {
+        input, textarea {
             width: 100%;
-            padding: 10px 12px;
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            color: var(--text-main);
-            font-size: 0.95rem;
+            padding: 8px;
             box-sizing: border-box;
-            transition: border-color 0.2s;
+            border: 1px solid #ccc;
+            border-radius: 4px;
         }
-
-        input[type="text"]:focus, textarea:focus {
-            outline: none;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
-        }
-
         button {
-            background-color: #21262d;
-            color: var(--accent-color);
-            border: 1px solid var(--border-color);
-            padding: 10px 20px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            border-radius: 6px;
+            background-color: #5865F2; /* Discordカラー */
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
             width: 100%;
-            transition: background-color 0.2s, border-color 0.2s;
+            font-size: 16px;
         }
-
         button:hover {
-            background-color: var(--accent-color);
-            color: #ffffff;
-            border-color: var(--accent-color);
+            background-color: #4752C4;
         }
-
-        .result-box {
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        #status {
             margin-top: 15px;
-            padding: 15px;
-            background-color: #040404;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas, Liberation Mono, monospace;
-            font-size: 0.85rem;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            color: var(--text-sub);
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+            text-align: center;
             font-weight: bold;
-            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
-    <h2>⚡ Fetch POST Request Client</h2>
+<div class="card">
+    <h2>Discord Webhook 送信フォーム</h2>
     
-    <div class="card">
-        <form id="postForm">
-            <!-- 🔗 URLを自由に指定できる入力欄 -->
-            <div class="form-group">
-                <label for="endpointUrl">送信先エンドポイント URL:</label>
-                <input type="text" id="endpointUrl" required value="https://typicode.com">
-                <div class="input-desc">※初期値としてテスト用のダミーAPIが入っています。ご自身のURLに書き換えてください。</div>
-            </div>
-
-            <!-- 📝 送信するJSONデータ（自由に変更可能） -->
-            <div class="form-group">
-                <label for="jsonBody">送信データ (JSONフォーマット):</label>
-                <textarea id="jsonBody" rows="8" required>{\n  "title": "テストタイトル",\n  "body": "ここにメッセージを入力します",\n  "userId": 1\n}</textarea>
-                <div class="input-desc">※正しいJSON形式（キーと文字列をダブルクォーテーションで囲む）で入力してください。</div>
-            </div>
-
-            <button type="submit">Fetch POST 送信</button>
-        </form>
+    <div class="form-group">
+        <label for="webhookUrl">Webhook URL:</label>
+        <input type="text" id="webhookUrl" placeholder="https://discord.com/api/webhooks/...">
     </div>
 
-    <h3>レスポンス結果:</h3>
-    <div class="card">
-        <div id="statusBadge"></div>
-        <div id="result" class="result-box">データを送信すると、ここに結果（JSON）が表示されます。</div>
+    <div class="form-group">
+        <label for="messageContent">送信する内容 (テキスト):</label>
+        <textarea id="messageContent" rows="4" placeholder="ここにメッセージを入力..."></textarea>
     </div>
 
-    <script>
-        document.getElementById('postForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
+    <div class="form-group">
+        <label for="linkUrl">リンク (URL):</label>
+        <input type="text" id="linkUrl" placeholder="https://example.com">
+    </div>
 
-            const url = document.getElementById('endpointUrl').value.trim();
-            const jsonBodyText = document.getElementById('jsonBody').value.trim();
-            const resultDiv = document.getElementById('result');
-            const statusBadge = document.getElementById('statusBadge');
+    <button id="sendBtn" onclick="sendWebhook()">Discordに送信する</button>
+    
+    <div id="status"></div>
+</div>
 
-            // 画面表示のリセット
-            statusBadge.innerHTML = '';
-            resultDiv.style.color = 'var(--text-sub)';
-            resultDiv.innerText = '通信中...';
+<script>
+    async function sendWebhook() {
+        const webhookUrl = document.getElementById('webhookUrl').value.trim();
+        const content = document.getElementById('messageContent').value.trim();
+        const linkUrl = document.getElementById('linkUrl').value.trim();
+        const sendBtn = document.getElementById('sendBtn');
+        const statusDiv = document.getElementById('status');
 
-            // 1. JSONの構文チェック
-            let parsedData;
-            try {
-                parsedData = JSON.parse(jsonBodyText);
-            } catch (e) {
-                statusBadge.innerHTML = '<span class="status-badge" style="background: rgba(248,81,73,0.15); color: var(--error-color);">JSONエラー</span>';
-                resultDiv.style.color = 'var(--error-color)';
-                resultDiv.innerText = `入力されたデータが正しいJSON形式ではありません。\nエラー内容: ${e.message}`;
-                return;
+        if (!webhookUrl) {
+            alert('Webhook URLを入力してください。');
+            return;
+        }
+
+        // 送信ボタンを無効化（連打防止・1回だけ送信）
+        sendBtn.disabled = true;
+        statusDiv.style.color = 'black';
+        statusDiv.textContent = '送信中...';
+
+        // メッセージの組み立て（テキストとリンクを結合）
+        let finalMessage = content;
+        if (linkUrl) {
+            finalMessage += `\n${linkUrl}`;
+        }
+
+        try {
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    content: finalMessage
+                })
+            });
+
+            if (response.ok || response.status === 204) {
+                statusDiv.style.color = 'green';
+                statusDiv.textContent = '送信に成功しました！';
+            } else {
+                statusDiv.style.color = 'red';
+                statusDiv.textContent = `送信失敗: ステータスコード ${response.status}`;
+                // 失敗した場合は再送できるようにボタンを戻す場合もありますが、
+                // 「1回だけ」の要件に合わせてそのままにするか調整可能です。
+                sendBtn.disabled = false; 
             }
+        } catch (error) {
+            console.error(error);
+            statusDiv.style.color = 'red';
+            statusDiv.textContent = 'エラーが発生しました。コンソールを確認してください。';
+            sendBtn.disabled = false;
+        }
+    }
+</script>
 
-            // 2. Fetch POST 送信の実行
-            try {
-                const response = await fetch(url, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(parsedData)
-                });
-
-                // 3. レスポンス結果の反映
-                if (response.ok) {
-                    const jsonResponse = await response.json();
-                    statusBadge.innerHTML = `<span class="status-badge" style="background: rgba(63,185,80,0.15); color: var(--success-color);">SUCCESS (HTTP ${response.status})</span>`;
-                    resultDiv.style.color = '#58a6ff'; // レスポンスJSONを見やすく青っぽく
-                    resultDiv.innerText = JSON.stringify(jsonResponse, null, 2);
-                } else {
-                    statusBadge.innerHTML = `<span class="status-badge" style="background: rgba(248,81,73,0.15); color: var(--error-color);">ERROR (HTTP ${response.status})</span>`;
-                    resultDiv.style.color = 'var(--error-color)';
-                    resultDiv.innerText = `サーバーがエラーを返しました。\nステータステキスト: ${response.statusText}`;
-                }
-
-            } catch (error) {
-                // CORSエラーやURL間違い、ネットワーク切断など
-                statusBadge.innerHTML = '<span class="status-badge" style="background: rgba(248,81,73,0.15); color: var(--error-color);">FAILED</span>';
-                resultDiv.style.color = 'var(--error-color)';
-                resultDiv.innerText = `【通信に失敗しました】\n理由として以下の可能性があります：\n1. URLが間違っている\n2. 接続先サーバーがCORS（クロスドメイン制限）を許可していない\n3. ネットワークがオフライン\n\nエラー詳細:\n${error.message}`;
-            }
-        });
-    </script>
 </body>
 </html>

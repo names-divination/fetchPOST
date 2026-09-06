@@ -4,42 +4,209 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Discord Webhook Tester</title>
+
 <style>
   *{box-sizing:border-box}
-  body{margin:0;min-height:100vh;background:#0f1117;color:#eee;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;display:grid;place-items:center;padding:24px}
-  .card{width:min(720px,100%);background:#181b24;border:1px solid #2b3040;border-radius:18px;padding:26px;box-shadow:0 18px 50px #0006}
-  h1{margin:0 0 8px;font-size:24px}
-  p{color:#aeb5c4;margin:0 0 22px}
-  label{display:block;font-weight:700;margin:16px 0 8px}
-  input,textarea{width:100%;background:#0f1219;color:#fff;border:1px solid #343a49;border-radius:10px;padding:12px;font:inherit;outline:none}
-  input:focus,textarea:focus{border-color:#7289da}
-  textarea{min-height:180px;resize:vertical}
-  button{margin-top:18px;width:100%;border:0;border-radius:10px;padding:13px;font-weight:800;font-size:15px;cursor:pointer;background:#5865f2;color:#fff}
-  button:disabled{opacity:.6;cursor:wait}
-  #status{margin-top:16px;padding:12px;border-radius:10px;display:none;white-space:pre-wrap}
-  .ok{background:#163b28;color:#8ff0b1}.err{background:#401b20;color:#ff9da7}
-  .hint{font-size:12px;color:#858da0;margin-top:10px}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:#0f1117;
+    color:#eee;
+    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    display:grid;
+    place-items:center;
+    padding:24px
+  }
+
+  .card{
+    width:min(720px,100%);
+    background:#181b24;
+    border:1px solid #2b3040;
+    border-radius:18px;
+    padding:26px;
+    box-shadow:0 18px 50px #0006
+  }
+
+  h1{
+    margin:0 0 8px;
+    font-size:24px
+  }
+
+  p{
+    color:#aeb5c4;
+    margin:0 0 22px
+  }
+
+  label{
+    display:block;
+    font-weight:700;
+    margin:16px 0 8px
+  }
+
+  input,textarea{
+    width:100%;
+    background:#0f1219;
+    color:#fff;
+    border:1px solid #343a49;
+    border-radius:10px;
+    padding:12px;
+    font:inherit;
+    outline:none
+  }
+
+  input:focus,textarea:focus{
+    border-color:#7289da
+  }
+
+  textarea{
+    min-height:180px;
+    resize:vertical
+  }
+
+  /* JSONヘッダー設定 */
+  .option{
+    margin-top:16px;
+    padding:12px 14px;
+    background:#10131b;
+    border:1px solid #303646;
+    border-radius:10px;
+  }
+
+  .checkbox-label{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin:0;
+    cursor:pointer;
+    font-weight:700;
+  }
+
+  .checkbox-label input{
+    width:18px;
+    height:18px;
+    margin:0;
+    cursor:pointer;
+    accent-color:#5865f2;
+  }
+
+  .option-description{
+    margin:7px 0 0 28px;
+    color:#858da0;
+    font-size:12px;
+    line-height:1.5;
+  }
+
+  button{
+    margin-top:18px;
+    width:100%;
+    border:0;
+    border-radius:10px;
+    padding:13px;
+    font-weight:800;
+    font-size:15px;
+    cursor:pointer;
+    background:#5865f2;
+    color:#fff
+  }
+
+  button:hover{
+    background:#4752c4
+  }
+
+  button:disabled{
+    opacity:.6;
+    cursor:wait
+  }
+
+  #status{
+    margin-top:16px;
+    padding:12px;
+    border-radius:10px;
+    display:none;
+    white-space:pre-wrap
+  }
+
+  .ok{
+    background:#163b28;
+    color:#8ff0b1
+  }
+
+  .err{
+    background:#401b20;
+    color:#ff9da7
+  }
+
+  .hint{
+    font-size:12px;
+    color:#858da0;
+    margin-top:10px
+  }
 </style>
 </head>
+
 <body>
+
 <main class="card">
+
   <h1>Discord Webhook Tester</h1>
-  <p>Webhook URL と送信内容を入力してテスト送信できます。</p>
+
+  <p>
+    Webhook URL と送信内容を入力してテスト送信できます。
+  </p>
 
   <label for="webhook">Webhook URL</label>
-  <input id="webhook" type="url" placeholder="https://discord.com/api/webhooks/..." autocomplete="off">
+
+  <input
+    id="webhook"
+    type="url"
+    placeholder="https://discord.com/api/webhooks/..."
+    autocomplete="off"
+  >
 
   <label for="message">内容</label>
-  <textarea id="message" placeholder="ここに送信する内容を入力"></textarea>
 
-  <button id="send">Discordへ送信</button>
+  <textarea
+    id="message"
+    placeholder="ここに送信する内容を入力"
+  ></textarea>
+
+  <!-- JSONヘッダー ON/OFF -->
+  <div class="option">
+
+    <label class="checkbox-label">
+      <input
+        id="jsonHeader"
+        type="checkbox"
+        checked
+      >
+
+      JSONヘッダーを付ける
+    </label>
+
+    <div class="option-description">
+      ON：Content-Type: application/json を付けて送信します。<br>
+      OFF：Content-Type ヘッダーを付けずに送信します。
+    </div>
+
+  </div>
+
+  <button id="send">
+    Discordへ送信
+  </button>
+
   <div id="status"></div>
-  <div class="hint">※ Webhook URLは秘密情報です。公開サイトや共有PCに保存しないでください。</div>
+
+  <div class="hint">
+    ※ Webhook URLは秘密情報です。公開サイトや共有PCに保存しないでください。
+  </div>
+
 </main>
 
 <script>
 const webhook = document.getElementById("webhook");
 const message = document.getElementById("message");
+const jsonHeader = document.getElementById("jsonHeader");
 const button = document.getElementById("send");
 const status = document.getElementById("status");
 
@@ -50,37 +217,86 @@ function show(text, ok) {
 }
 
 button.addEventListener("click", async () => {
+
   const url = webhook.value.trim();
   const content = message.value;
 
-  if (!url) return show("Webhook URLを入力してください。", false);
+  if (!url) {
+    return show("Webhook URLを入力してください。", false);
+  }
+
   if (!/^https:\/\/(discord\.com|discordapp\.com)\/api\/webhooks\//i.test(url)) {
     return show("Discord Webhook URLの形式を確認してください。", false);
   }
-  if (!content.trim()) return show("送信内容を入力してください。", false);
+
+  if (!content.trim()) {
+    return show("送信内容を入力してください。", false);
+  }
 
   button.disabled = true;
   show("送信中…", true);
 
   try {
+
+    /*
+     * ヘッダーをチェック状態によって切り替える
+     */
+    const headers = {};
+
+    if (jsonHeader.checked) {
+      headers["Content-Type"] = "application/json";
+    }
+
+    /*
+     * Discord Webhookへ送るJSON
+     */
+    const body = JSON.stringify({
+      content: content
+    });
+
     const res = await fetch(url, {
       method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({content})
+      headers: headers,
+      body: body
     });
 
     if (res.ok || res.status === 204) {
-      show("送信成功！", true);
+
+      show(
+        "送信成功！\n" +
+        "JSONヘッダー: " +
+        (jsonHeader.checked ? "ON" : "OFF"),
+        true
+      );
+
     } else {
+
       const text = await res.text();
-      show(`送信失敗: HTTP ${res.status}\n${text || "Discordから詳細が返りませんでした。"}`, false);
+
+      show(
+        `送信失敗: HTTP ${res.status}\n` +
+        `${text || "Discordから詳細が返りませんでした。"}`,
+        false
+      );
     }
+
   } catch (e) {
-    show("送信できませんでした。\nブラウザのCORS制限などが原因の可能性があります。\n" + e.message, false);
+
+    show(
+      "送信できませんでした。\n" +
+      "ブラウザのCORS制限などが原因の可能性があります。\n" +
+      e.message,
+      false
+    );
+
   } finally {
+
     button.disabled = false;
+
   }
+
 });
 </script>
+
 </body>
 </html>

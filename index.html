@@ -6,141 +6,193 @@
 <title>Discord Webhook Tester</title>
 
 <style>
-  *{box-sizing:border-box}
-
-  body{
-    margin:0;
-    min-height:100vh;
-    background:#0f1117;
-    color:#eee;
-    font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-    display:grid;
-    place-items:center;
-    padding:24px
+  * {
+    box-sizing: border-box;
   }
 
-  .card{
-    width:min(720px,100%);
-    background:#181b24;
-    border:1px solid #2b3040;
-    border-radius:18px;
-    padding:26px;
-    box-shadow:0 18px 50px #0006
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: #0f1117;
+    color: #eee;
+    font-family:
+      system-ui,
+      -apple-system,
+      BlinkMacSystemFont,
+      "Segoe UI",
+      sans-serif;
+
+    display: grid;
+    place-items: center;
+    padding: 24px;
   }
 
-  h1{
-    margin:0 0 8px;
-    font-size:24px
+  .card {
+    width: min(760px, 100%);
+    background: #181b24;
+    border: 1px solid #2b3040;
+    border-radius: 18px;
+    padding: 26px;
+    box-shadow: 0 18px 50px #0006;
   }
 
-  p{
-    color:#aeb5c4;
-    margin:0 0 22px
+  h1 {
+    margin: 0 0 8px;
+    font-size: 24px;
   }
 
-  label{
-    display:block;
-    font-weight:700;
-    margin:16px 0 8px
+  p {
+    color: #aeb5c4;
+    margin: 0 0 22px;
+    line-height: 1.5;
   }
 
-  input,textarea{
-    width:100%;
-    background:#0f1219;
-    color:#fff;
-    border:1px solid #343a49;
-    border-radius:10px;
-    padding:12px;
-    font:inherit;
-    outline:none
+  label {
+    display: block;
+    font-weight: 700;
+    margin: 16px 0 8px;
   }
 
-  input:focus,textarea:focus{
-    border-color:#7289da
+  input,
+  textarea {
+    width: 100%;
+    background: #0f1219;
+    color: #fff;
+    border: 1px solid #343a49;
+    border-radius: 10px;
+    padding: 12px;
+    font: inherit;
+    outline: none;
   }
 
-  textarea{
-    min-height:180px;
-    resize:vertical
+  input:focus,
+  textarea:focus {
+    border-color: #7289da;
   }
 
-  /* JSONヘッダー設定 */
-  .option{
-    margin-top:16px;
-    padding:12px 14px;
-    background:#10131b;
-    border:1px solid #303646;
-    border-radius:10px;
+  textarea {
+    min-height: 300px;
+    resize: vertical;
+    font-family:
+      ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      Monaco,
+      Consolas,
+      monospace;
+    font-size: 13px;
+    line-height: 1.5;
   }
 
-  .checkbox-label{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin:0;
-    cursor:pointer;
-    font-weight:700;
+  .option {
+    margin-top: 16px;
+    padding: 14px;
+    background: #10131b;
+    border: 1px solid #303646;
+    border-radius: 10px;
   }
 
-  .checkbox-label input{
-    width:18px;
-    height:18px;
-    margin:0;
-    cursor:pointer;
-    accent-color:#5865f2;
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    cursor: pointer;
+    font-weight: 700;
   }
 
-  .option-description{
-    margin:7px 0 0 28px;
-    color:#858da0;
-    font-size:12px;
-    line-height:1.5;
+  .checkbox-label input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    cursor: pointer;
+    accent-color: #5865f2;
   }
 
-  button{
-    margin-top:18px;
-    width:100%;
-    border:0;
-    border-radius:10px;
-    padding:13px;
-    font-weight:800;
-    font-size:15px;
-    cursor:pointer;
-    background:#5865f2;
-    color:#fff
+  .option-description {
+    margin: 8px 0 0 28px;
+    color: #858da0;
+    font-size: 12px;
+    line-height: 1.5;
   }
 
-  button:hover{
-    background:#4752c4
+  .buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
   }
 
-  button:disabled{
-    opacity:.6;
-    cursor:wait
+  .secondary {
+    margin-top: 0;
+    background: #2b3040;
   }
 
-  #status{
-    margin-top:16px;
-    padding:12px;
-    border-radius:10px;
-    display:none;
-    white-space:pre-wrap
+  .secondary:hover {
+    background: #343b4d;
   }
 
-  .ok{
-    background:#163b28;
-    color:#8ff0b1
+  button {
+    margin-top: 18px;
+    width: 100%;
+    border: 0;
+    border-radius: 10px;
+    padding: 13px;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    background: #5865f2;
+    color: #fff;
+    transition: .15s;
   }
 
-  .err{
-    background:#401b20;
-    color:#ff9da7
+  button:hover {
+    background: #4752c4;
   }
 
-  .hint{
-    font-size:12px;
-    color:#858da0;
-    margin-top:10px
+  button:disabled {
+    opacity: .6;
+    cursor: wait;
+  }
+
+  #status {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 10px;
+    display: none;
+    white-space: pre-wrap;
+    line-height: 1.5;
+    font-size: 13px;
+  }
+
+  .ok {
+    background: #163b28;
+    color: #8ff0b1;
+  }
+
+  .err {
+    background: #401b20;
+    color: #ff9da7;
+  }
+
+  .hint {
+    font-size: 12px;
+    color: #858da0;
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  .section-title {
+    margin-top: 22px;
+    font-size: 13px;
+    font-weight: 800;
+    color: #c7ccda;
+  }
+
+  @media (max-width: 600px) {
+    .buttons {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
 </head>
@@ -152,9 +204,12 @@
   <h1>Discord Webhook Tester</h1>
 
   <p>
-    Webhook URL と送信内容を入力してテスト送信できます。
+    Webhook URLとJSON形式の送信内容を入力して、
+    Discord Webhookへテスト送信できます。
   </p>
 
+
+  <!-- Webhook URL -->
   <label for="webhook">Webhook URL</label>
 
   <input
@@ -164,17 +219,23 @@
     autocomplete="off"
   >
 
-  <label for="message">内容</label>
+
+  <!-- JSON -->
+  <label for="message">送信するJSON</label>
 
   <textarea
     id="message"
-    placeholder="ここに送信する内容を入力"
-  ></textarea>
+    spellcheck="false"
+    placeholder='{
+  "content": "Hello Discord!"
+}'></textarea>
 
-  <!-- JSONヘッダー ON/OFF -->
+
+  <!-- JSONヘッダー -->
   <div class="option">
 
     <label class="checkbox-label">
+
       <input
         id="jsonHeader"
         type="checkbox"
@@ -182,120 +243,346 @@
       >
 
       JSONヘッダーを付ける
+
     </label>
 
     <div class="option-description">
-      ON：Content-Type: application/json を付けて送信します。<br>
-      OFF：Content-Type ヘッダーを付けずに送信します。
+      ON：
+      <code>Content-Type: application/json</code>
+      を付けて送信します。<br>
+
+      OFF：
+      Content-Typeヘッダーを付けずに送信します。
     </div>
 
   </div>
 
+
+  <!-- サンプル -->
+  <div class="section-title">
+    サンプル
+  </div>
+
+  <div class="buttons">
+
+    <button
+      id="normalExample"
+      class="secondary"
+      type="button"
+    >
+      通常メッセージ
+    </button>
+
+    <button
+      id="embedExample"
+      class="secondary"
+      type="button"
+    >
+      Embedサンプル
+    </button>
+
+  </div>
+
+
+  <!-- 送信 -->
   <button id="send">
     Discordへ送信
   </button>
 
+
+  <!-- ステータス -->
   <div id="status"></div>
 
+
   <div class="hint">
-    ※ Webhook URLは秘密情報です。公開サイトや共有PCに保存しないでください。
+    ※ Webhook URLは秘密情報です。
+    公開サイトや共有PCに保存しないでください。
   </div>
 
 </main>
 
-<script>
-const webhook = document.getElementById("webhook");
-const message = document.getElementById("message");
-const jsonHeader = document.getElementById("jsonHeader");
-const button = document.getElementById("send");
-const status = document.getElementById("status");
 
+<script>
+
+const webhook =
+  document.getElementById("webhook");
+
+const message =
+  document.getElementById("message");
+
+const jsonHeader =
+  document.getElementById("jsonHeader");
+
+const button =
+  document.getElementById("send");
+
+const status =
+  document.getElementById("status");
+
+const normalExample =
+  document.getElementById("normalExample");
+
+const embedExample =
+  document.getElementById("embedExample");
+
+
+/*
+ * ステータス表示
+ */
 function show(text, ok) {
+
   status.textContent = text;
-  status.className = ok ? "ok" : "err";
+
+  status.className =
+    ok ? "ok" : "err";
+
   status.style.display = "block";
 }
 
+
+/*
+ * 通常メッセージのサンプル
+ */
+normalExample.addEventListener("click", () => {
+
+  message.value =
+`{
+  "content": "Hello Discord!"
+}`;
+
+});
+
+
+/*
+ * Embedのサンプル
+ */
+embedExample.addEventListener("click", () => {
+
+  message.value =
+`{
+  "embeds": [
+    {
+      "title": "🔓 TOTO HUB 新規端末からの解除実行",
+      "description": "これはEmbedのテストメッセージです。",
+      "color": 16753920,
+      "fields": [
+        {
+          "name": "👤 実行プレイヤー",
+          "value": "PlayerName",
+          "inline": true
+        },
+        {
+          "name": "🆔 ユーザーID",
+          "value": "123456789",
+          "inline": true
+        },
+        {
+          "name": "🌐 IPアドレス",
+          "value": "xxx.xxx.xxx.xxx",
+          "inline": false
+        },
+        {
+          "name": "🔑 端末ID (HWID)",
+          "value": "HWID",
+          "inline": false
+        },
+        {
+          "name": "💻 エグゼキューター",
+          "value": "ExecutorName",
+          "inline": true
+        }
+      ],
+      "footer": {
+        "text": "TOTO HUB"
+      },
+      "timestamp": "2026-09-06T00:00:00.000Z"
+    }
+  ]
+}`;
+
+});
+
+
+/*
+ * 送信
+ */
 button.addEventListener("click", async () => {
 
-  const url = webhook.value.trim();
-  const content = message.value;
+  const url =
+    webhook.value.trim();
 
+  const content =
+    message.value.trim();
+
+
+  /*
+   * URLチェック
+   */
   if (!url) {
-    return show("Webhook URLを入力してください。", false);
+
+    return show(
+      "Webhook URLを入力してください。",
+      false
+    );
+
   }
 
-  if (!/^https:\/\/(discord\.com|discordapp\.com)\/api\/webhooks\//i.test(url)) {
-    return show("Discord Webhook URLの形式を確認してください。", false);
+
+  if (
+    !/^https:\\/\\/(discord\\.com|discordapp\\.com)\\/api\\/webhooks\\//i.test(url)
+  ) {
+
+    return show(
+      "Discord Webhook URLの形式を確認してください。",
+      false
+    );
+
   }
 
-  if (!content.trim()) {
-    return show("送信内容を入力してください。", false);
+
+  /*
+   * JSONチェック
+   */
+  if (!content) {
+
+    return show(
+      "送信するJSONを入力してください。",
+      false
+    );
+
   }
 
-  button.disabled = true;
-  show("送信中…", true);
 
+  /*
+   * JSONとして正しいか確認
+   */
   try {
 
-    /*
-     * ヘッダーをチェック状態によって切り替える
-     */
-    const headers = {};
-
-    if (jsonHeader.checked) {
-      headers["Content-Type"] = "application/json";
-    }
-
-    /*
-     * Discord Webhookへ送るJSON
-     */
-    const body = JSON.stringify({
-      content: content
-    });
-
-    const res = await fetch(url, {
-      method: "POST",
-      headers: headers,
-      body: body
-    });
-
-    if (res.ok || res.status === 204) {
-
-      show(
-        "送信成功！\n" +
-        "JSONヘッダー: " +
-        (jsonHeader.checked ? "ON" : "OFF"),
-        true
-      );
-
-    } else {
-
-      const text = await res.text();
-
-      show(
-        `送信失敗: HTTP ${res.status}\n` +
-        `${text || "Discordから詳細が返りませんでした。"}`,
-        false
-      );
-    }
+    JSON.parse(content);
 
   } catch (e) {
 
-    show(
-      "送信できませんでした。\n" +
-      "ブラウザのCORS制限などが原因の可能性があります。\n" +
+    return show(
+      "JSONの構文が正しくありません。\n\n" +
       e.message,
       false
     );
 
-  } finally {
+  }
+
+
+  button.disabled = true;
+
+  show(
+    "送信中…",
+    true
+  );
+
+
+  try {
+
+    /*
+     * ヘッダーを作成
+     */
+    const headers = {};
+
+
+    /*
+     * チェックONならJSONヘッダーを追加
+     */
+    if (jsonHeader.checked) {
+
+      headers["Content-Type"] =
+        "application/json";
+
+    }
+
+
+    /*
+     * 重要：
+     *
+     * 入力されたJSONを
+     * そのままWebhookのBodyにする。
+     *
+     * JSON.stringify({
+     *   content
+     * })
+     *
+     * にはしない。
+     */
+    const res =
+      await fetch(url, {
+
+        method: "POST",
+
+        headers: headers,
+
+        body: content
+
+      });
+
+
+    /*
+     * 成功
+     */
+    if (
+      res.ok ||
+      res.status === 204
+    ) {
+
+      show(
+        "送信成功！\n\n" +
+        "JSONヘッダー: " +
+        (
+          jsonHeader.checked
+            ? "ON"
+            : "OFF"
+        ),
+        true
+      );
+
+    }
+
+    /*
+     * 失敗
+     */
+    else {
+
+      const text =
+        await res.text();
+
+      show(
+        `送信失敗: HTTP ${res.status}\n\n` +
+        (
+          text ||
+          "Discordから詳細が返りませんでした。"
+        ),
+        false
+      );
+
+    }
+
+  }
+
+  catch (e) {
+
+    show(
+      "送信できませんでした。\n\n" +
+      "ブラウザのCORS制限などが原因の可能性があります。\n\n" +
+      e.message,
+      false
+    );
+
+  }
+
+  finally {
 
     button.disabled = false;
 
   }
 
 });
+
 </script>
 
 </body>
